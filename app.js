@@ -18,16 +18,12 @@ app.get("/findColleges", async (req, res) => {
 
     const filter = {};
 
-    // String filters (case-insensitive)
     if (name) filter.name = { $regex: name, $options: "i" };
     if (state) filter.state = { $regex: state, $options: "i" };
     if (city) filter.city = { $regex: city, $options: "i" };
     if (course) filter.course = { $regex: course, $options: "i" };
-
-    // Exam filter (array contains exam)
     if (exam) filter.exam = { $elemMatch: { $regex: exam, $options: "i" } };
 
-    // Numeric filters (valid positive numbers only)
     const minPackNum = parseFloat(minPackage);
     const maxFeesNum = parseFloat(maxFees);
 
@@ -39,7 +35,6 @@ app.get("/findColleges", async (req, res) => {
       filter.maxFees = { $lte: maxFeesNum };
     }
 
-    // Query MongoDB
     const colleges = await collegeModel.find(filter).select({
       _id: 0,
       name: 1,
@@ -51,7 +46,6 @@ app.get("/findColleges", async (req, res) => {
       minPackage: 1,
     });
 
-    // Preserve key order
     const result = colleges.map((col) => ({
       name: col.name,
       city: col.city,
